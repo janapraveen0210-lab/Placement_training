@@ -1,7 +1,7 @@
 {
   "profile": {
     "id": "user_candidate",
-    "name": "Candidate Student",
+    "name": "Candidate Studentjjk",
     "college": "College of Engineering & Technology",
     "department": "Computer Science & Engineering",
     "year": "Final Year (2026)",
@@ -67,7 +67,7 @@
     },
     {
       "id": "user_candidate",
-      "name": "Candidate Student",
+      "name": "Candidate Studentjjk",
       "college": "College of Engineering & Technology",
       "level": 2,
       "xp": 500,
