@@ -31,14 +31,99 @@ app.use('/api', gamificationRouter);
 // In-memory store for active sessions (can be replaced with Redis/Mongo)
 const interviewSessions = new Map();
 
+/**
+ * Unified AI Caller: Supports Cloud Groq API (Qwen/Llama) or Local Python FastAPI (Qwen2.5-1.5B)
+ */
+async function callAI(message, conversation = []) {
+  if (process.env.GROQ_API_KEY) {
+    const groqModel = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
+    const messages = [
+      {
+        role: 'system',
+        content: `You are "Placement Twin AI", an elite, senior technical interviewer conducting a high-stakes campus placement interview for software engineering roles at top tech companies.
+Your responsibilities:
+1. Conduct an adaptive, realistic, 1-on-1 technical interview.
+2. Ask exactly ONE clear question at a time.
+3. Evaluate the candidate rigorously on each turn:
+   - Technical Understanding (0-100)
+   - Communication Clarity (0-100)
+   - Answer Structure (STAR method / clear reasoning) (0-100)
+   - Problem Solving & Critical Thinking (0-100)
+   - Project Knowledge & Implementation Depth (0-100)
+   - Overall Placement Readiness (0-100)
+   - Key Strengths (array of strings)
+   - Actionable Improvements (array of strings)
+   - Rationale for the next follow-up question.
+
+CRITICAL: Respond ONLY with a valid, parseable JSON object matching this schema:
+{
+  "response": "<Your professional interviewer dialogue addressing their answer and asking the next question>",
+  "evaluation": {
+    "next_question": "<The exact single question you are asking next>",
+    "technical_score": 85,
+    "communication_score": 80,
+    "structure_score": 80,
+    "problem_solving_score": 75,
+    "project_score": 70,
+    "overall_score": 80,
+    "strengths": ["string"],
+    "improvements": ["string"],
+    "follow_up_reason": "string"
+  }
+}`
+      },
+      ...conversation.map(c => ({ role: c.role, content: c.content })),
+      { role: 'user', content: message }
+    ];
+
+    const groqRes = await axios.post('https://api.groq.com/openai/v1/chat/completions', {
+      model: groqModel,
+      messages,
+      response_format: { type: "json_object" },
+      temperature: 0.7
+    }, {
+      headers: {
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      timeout: 30000
+    });
+
+    const parsed = JSON.parse(groqRes.data.choices[0].message.content);
+    return {
+      response: parsed.response,
+      evaluation: parsed.evaluation
+    };
+  }
+
+  // Fallback to local Python FastAPI Qwen2.5 service
+  const response = await axios.post(`${AI_SERVICE_URL}/ai/chat`, {
+    message: message.trim(),
+    conversation
+  }, {
+    headers: { 'Content-Type': 'application/json' },
+    timeout: 120000
+  });
+
+  return response.data;
+}
+
 // Health Check
 app.get('/api/health', async (req, res) => {
   let aiHealth = { status: 'unreachable' };
-  try {
-    const response = await axios.get(`${AI_SERVICE_URL}/health`, { timeout: 3000 });
-    aiHealth = response.data;
-  } catch (err) {
-    aiHealth = { status: 'offline', error: err.message };
+  if (process.env.GROQ_API_KEY) {
+    aiHealth = {
+      status: 'online',
+      provider: 'groq-cloud-llm',
+      model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile'
+    };
+  } else {
+    try {
+      const response = await axios.get(`${AI_SERVICE_URL}/health`, { timeout: 3000 });
+      aiHealth = response.data;
+    } catch (err) {
+      aiHealth = { status: 'offline', error: err.message };
+    }
   }
 
   res.json({
@@ -130,26 +215,17 @@ app.post('/api/interview/message', async (req, res) => {
     const session = sessionId ? interviewSessions.get(sessionId) : null;
     const history = conversation.length > 0 ? conversation : (session ? session.conversation : []);
 
-    // Forward request to Python FastAPI AI service
+    // Forward request to AI (Groq cloud LLM or local Python FastAPI Qwen2.5)
     let aiResponse;
     try {
-      const response = await axios.post(`${AI_SERVICE_URL}/ai/chat`, {
-        message: message.trim(),
-        conversation: history
-      }, {
-        headers: { 'Content-Type': 'application/json' },
-        timeout: 120000 // 2 minutes timeout for local LLM inference
-      });
-
-      aiResponse = response.data;
+      aiResponse = await callAI(message.trim(), history);
     } catch (aiErr) {
-      console.error('Error from Python AI Service:', aiErr.response?.data || aiErr.message);
+      console.error('Error from AI Service:', aiErr.response?.data || aiErr.message);
 
-      // Check if AI service is unreachable vs failed
       if (aiErr.code === 'ECONNREFUSED' || aiErr.code === 'ETIMEDOUT') {
         return res.status(503).json({
           success: false,
-          error: 'Python AI service is currently unavailable. Please ensure the FastAPI server is running on port 8000 with Qwen2.5-1.5B-Instruct.',
+          error: 'AI service is currently unavailable. Set GROQ_API_KEY in environment or run local FastAPI on port 8000.',
           details: aiErr.message
         });
       }
@@ -336,9 +412,15 @@ app.post('/api/interview/end', (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`=================================================`);
-  console.log(` Placement Twin Express Backend running on port ${PORT}`);
-  console.log(` AI Service configured at: ${AI_SERVICE_URL}`);
-  console.log(`=================================================`);
-});
+// Export the Express app for Vercel
+export default app;
+
+// Run normally when developing locally
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`=================================================`);
+    console.log(` Placement Twin Express Backend running on port ${PORT}`);
+    console.log(` AI Service configured at: ${AI_SERVICE_URL}`);
+    console.log(`=================================================`);
+  });
+}
