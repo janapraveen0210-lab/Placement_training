@@ -72,27 +72,44 @@ export default function MyProgress() {
         interviewApi.getAchievements()
       ]);
 
-      if (profRes.status === 'fulfilled' && profRes.value?.success) {
-        setProfile(profRes.value.profile);
+      if (profRes.status === 'fulfilled' && profRes.value?.success && profRes.value.profile) {
+        const p = profRes.value.profile;
+        setProfile(prev => ({ ...prev, ...p }));
         setEditFormData({
-          name: profRes.value.profile.name || "",
-          college: profRes.value.profile.college || "",
-          branch: profRes.value.profile.branch || "",
-          graduationYear: profRes.value.profile.graduationYear || 2026
+          name: p.name || "",
+          college: p.college || "",
+          branch: p.branch || "",
+          graduationYear: p.graduationYear || 2026
         });
       }
 
       if (progRes.status === 'fulfilled' && progRes.value?.success) {
-        setProgress(progRes.value.progress);
+        const raw = progRes.value.progress || progRes.value.stats || progRes.value.profile || {};
+        setProgress(prev => ({
+          ...prev,
+          level: raw.level || prev.level,
+          levelTitle: raw.levelTitle || prev.levelTitle,
+          xp: raw.xp ?? raw.totalXp ?? prev.xp,
+          nextLevelXp: raw.nextLevelXp ?? prev.nextLevelXp,
+          progressPercent: raw.progressPercent ?? prev.progressPercent,
+          streak: raw.streak ?? raw.currentStreak ?? prev.streak,
+          problemsSolvedCount: raw.problemsSolvedCount ?? prev.problemsSolvedCount,
+          interviewsCompletedCount: raw.interviewsCompletedCount ?? raw.interviewsCompleted ?? prev.interviewsCompletedCount,
+          achievementsCount: raw.achievementsCount ?? raw.achievementsUnlocked ?? prev.achievementsCount
+        }));
       }
 
       if (leadRes.status === 'fulfilled' && leadRes.value?.success) {
-        setLeaderboard(leadRes.value.leaderboard || []);
+        setLeaderboard(Array.isArray(leadRes.value.leaderboard) ? leadRes.value.leaderboard : []);
         setUserRank(leadRes.value.userRank || 4);
       }
 
       if (achRes.status === 'fulfilled' && achRes.value?.success) {
-        setAchievements(achRes.value.achievements || []);
+        const achList = Array.isArray(achRes.value.achievements) ? achRes.value.achievements : [];
+        setAchievements(achList.map(a => ({
+          ...a,
+          unlocked: a.unlocked ?? a.isUnlocked ?? false
+        })));
       }
     } catch (err) {
       console.warn("Could not load gamification center data:", err);

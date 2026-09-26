@@ -52,11 +52,25 @@ export default function Dashboard({ setActiveTab }) {
           interviewApi.getProgress()
         ]);
 
-        if (profRes.status === 'fulfilled' && profRes.value?.success) {
-          setProfile(profRes.value.profile);
+        if (profRes.status === 'fulfilled' && profRes.value?.success && profRes.value.profile) {
+          setProfile(prev => ({ ...prev, ...profRes.value.profile }));
         }
+
         if (progRes.status === 'fulfilled' && progRes.value?.success) {
-          setProgressData(progRes.value.progress);
+          const raw = progRes.value.progress || progRes.value.stats || progRes.value.profile || {};
+          setProgressData(prev => ({
+            ...prev,
+            level: raw.level || prev.level,
+            levelTitle: raw.levelTitle || prev.levelTitle,
+            xp: raw.xp ?? raw.totalXp ?? prev.xp,
+            currentLevelMinXp: raw.currentLevelMinXp ?? prev.currentLevelMinXp,
+            nextLevelXp: raw.nextLevelXp ?? prev.nextLevelXp,
+            progressPercent: raw.progressPercent ?? prev.progressPercent,
+            streak: raw.streak ?? raw.currentStreak ?? prev.streak,
+            problemsSolvedCount: raw.problemsSolvedCount ?? prev.problemsSolvedCount,
+            interviewsCompletedCount: raw.interviewsCompletedCount ?? raw.interviewsCompleted ?? prev.interviewsCompletedCount,
+            achievementsCount: raw.achievementsCount ?? raw.achievementsUnlocked ?? prev.achievementsCount
+          }));
         }
       } catch (err) {
         console.warn("Could not fetch dashboard profile/progress:", err);

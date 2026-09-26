@@ -63,7 +63,30 @@ router.get('/achievements', (req, res) => {
 router.get('/progress', (req, res) => {
   try {
     const progressData = db.getProgress();
-    res.json({ success: true, ...progressData });
+    const p = progressData.profile || {};
+    const s = progressData.stats || {};
+    const unifiedProgress = {
+      level: p.level || s.level || 1,
+      levelTitle: p.levelTitle || s.levelTitle || "Placement Novice",
+      xp: p.xp ?? s.totalXp ?? 0,
+      totalXp: p.xp ?? s.totalXp ?? 0,
+      currentLevelMinXp: p.currentLevelMinXp || 0,
+      nextLevelXp: p.nextLevelXp || 800,
+      progressPercent: p.progressPercent || 0,
+      streak: p.currentStreak || s.currentStreak || 1,
+      currentStreak: p.currentStreak || s.currentStreak || 1,
+      problemsSolvedCount: p.problemsSolved?.length ?? s.problemsSolvedCount ?? 0,
+      interviewsCompletedCount: p.interviewsCompleted ?? s.interviewsCompleted ?? 0,
+      achievementsCount: p.unlockedAchievements?.length ?? s.achievementsUnlocked ?? 0
+    };
+
+    res.json({
+      success: true,
+      progress: unifiedProgress,
+      stats: s,
+      profile: p,
+      ...progressData
+    });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
