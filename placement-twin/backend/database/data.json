@@ -1,0 +1,179 @@
+{
+  "profile": {
+    "id": "user_candidate",
+    "name": "Candidate Student",
+    "college": "College of Engineering & Technology",
+    "department": "Computer Science & Engineering",
+    "year": "Final Year (2026)",
+    "targetRole": "Software Engineer - Full Stack",
+    "xp": 500,
+    "level": 2,
+    "levelTitle": "Learner",
+    "currentStreak": 3,
+    "longestStreak": 5,
+    "lastActiveDate": "2026-09-26",
+    "problemsSolved": [
+      "two-sum",
+      "palindrome-number"
+    ],
+    "interviewsCompleted": 1,
+    "assessmentsCompleted": 1,
+    "communicationCompleted": 1,
+    "resumeScansCompleted": 1,
+    "unlockedAchievements": [
+      "first_problem",
+      "streak_3",
+      "interview_ready",
+      "communication_master",
+      "ats_optimized"
+    ]
+  },
+  "leaderboard": [
+    {
+      "id": "lead_1",
+      "name": "Aarav Sharma",
+      "college": "IIT Madras",
+      "level": 6,
+      "xp": 2850,
+      "problemsSolved": 24,
+      "streak": 8
+    },
+    {
+      "id": "lead_2",
+      "name": "Priya Patel",
+      "college": "NIT Trichy",
+      "level": 5,
+      "xp": 2150,
+      "problemsSolved": 19,
+      "streak": 6
+    },
+    {
+      "id": "lead_3",
+      "name": "Rohan Verma",
+      "college": "BITS Pilani",
+      "level": 4,
+      "xp": 1650,
+      "problemsSolved": 14,
+      "streak": 5
+    },
+    {
+      "id": "lead_4",
+      "name": "Ananya Iyer",
+      "college": "PSG Tech",
+      "level": 3,
+      "xp": 950,
+      "problemsSolved": 8,
+      "streak": 4
+    },
+    {
+      "id": "user_candidate",
+      "name": "Candidate Student",
+      "college": "College of Engineering & Technology",
+      "level": 2,
+      "xp": 500,
+      "problemsSolved": 2,
+      "streak": 3
+    },
+    {
+      "id": "lead_5",
+      "name": "Karthik Raja",
+      "college": "VIT Vellore",
+      "level": 2,
+      "xp": 350,
+      "problemsSolved": 3,
+      "streak": 2
+    }
+  ],
+  "submissions": [
+    {
+      "id": "sub_1790408474308",
+      "problemId": "two-sum",
+      "language": "python",
+      "status": "Accepted",
+      "passedCount": 6,
+      "totalCount": 6,
+      "runtime": "28 ms",
+      "timestamp": "2026-09-26T07:41:14.308Z"
+    },
+    {
+      "id": "sub_1790408468262",
+      "problemId": "two-sum",
+      "language": "python",
+      "status": "Runtime Error",
+      "passedCount": 0,
+      "totalCount": 6,
+      "runtime": "28 ms",
+      "timestamp": "2026-09-26T07:41:08.262Z"
+    },
+    {
+      "id": "sub_1790408466420",
+      "problemId": "two-sum",
+      "language": "python",
+      "status": "Runtime Error",
+      "passedCount": 0,
+      "totalCount": 6,
+      "runtime": "34 ms",
+      "timestamp": "2026-09-26T07:41:06.420Z"
+    },
+    {
+      "id": "sub_1790408457824",
+      "problemId": "two-sum",
+      "language": "python",
+      "status": "Runtime Error",
+      "passedCount": 0,
+      "totalCount": 6,
+      "runtime": "68 ms",
+      "timestamp": "2026-09-26T07:40:57.824Z"
+    },
+    {
+      "id": "sub_1790407518777",
+      "problemId": "palindrome-number",
+      "language": "python",
+      "status": "Accepted",
+      "passedCount": 5,
+      "totalCount": 5,
+      "runtime": "24 ms",
+      "timestamp": "2026-09-26T07:25:18.777Z"
+    },
+    {
+      "id": "sub_1790407484789",
+      "problemId": "two-sum",
+      "language": "python",
+      "status": "Accepted",
+      "passedCount": 6,
+      "totalCount": 6,
+      "runtime": "27 ms",
+      "timestamp": "2026-09-26T07:24:44.789Z"
+    },
+    {
+      "id": "sub_1790407416596",
+      "problemId": "two-sum",
+      "language": "python",
+      "status": "Wrong Answer",
+      "passedCount": 0,
+      "totalCount": 6,
+      "runtime": "26 ms",
+      "timestamp": "2026-09-26T07:23:36.596Z"
+    },
+    {
+      "id": "sub_1790407360320",
+      "problemId": "two-sum",
+      "language": "python",
+      "status": "Wrong Answer",
+      "passedCount": 0,
+      "totalCount": 6,
+      "runtime": "28 ms",
+      "timestamp": "2026-09-26T07:22:40.320Z"
+    },
+    {
+      "id": "sub_1790406968650",
+      "problemId": "two-sum",
+      "language": "python",
+      "status": "Accepted",
+      "passedCount": 6,
+      "totalCount": 6,
+      "runtime": "31 ms",
+      "timestamp": "2026-09-26T07:16:08.650Z"
+    }
+  ]
+}
